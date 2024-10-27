@@ -1,0 +1,49 @@
+<div class="container" cdkDropListGroup>
+  <!-- Sidebar with draggable items -->
+  <div class="sidebar" cdkDropList [cdkDropListData]="items" cdkDropListConnectedTo="canvasList">
+    <div *ngFor="let item of items" class="draggable-item" cdkDrag [cdkDragData]="item">
+      {{ item }}
+    </div>
+  </div>
+
+  <!-- Main canvas area with a drop list -->
+  <div class="canvas" cdkDropList id="canvasList" [cdkDropListData]="droppedItems" (cdkDropListDropped)="onDrop($event)">
+    <div *ngIf="droppedItems.length === 0" class="empty-message">
+      <span>Drag and drop on canvas</span>
+    </div>
+
+    <ng-container *ngFor="let item of droppedItems; let i = index">
+      <div class="canvas-item" cdkDrag>
+       <!-- Show the content or editor based on edit mode -->
+      <div (dblclick)="onElementClick($event)" (click)="setActive(i)"  class="canvas-item-content" [innerHTML]="item.htmlContent"></div>
+
+        <div *ngIf="activeIndex === i"  class="button-group">
+          <button class="move-button" (click)="moveUp(i)" [disabled]="i === 0">Up</button>
+          <button class="move-button" (click)="moveDown(i)" [disabled]="i === droppedItems.length - 1">Down</button>
+          <button class="delete-button" (click)="deleteItem(i)">Delete</button>
+        </div>
+      </div>
+    </ng-container>
+
+    <!-- Editor container positioned dynamically -->
+    <div class="editor-container" #editorContainer>
+      <quill-editor #editor [modules]="editorModules"></quill-editor>
+      <div class="editor-actions">
+        <button (click)="saveContent()">Save</button>
+        <button (click)="closeEditor()">Cancel</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Settings panel for item customization -->
+  <div class="settings-panel">
+    <h3>General</h3>
+    <label>Width (px):</label>
+    <input type="range" min="200" max="800" />
+    <span>{{ settings.width }}</span>
+
+    <label>Min Height (px):</label>
+    <input type="range" min="200" max="800"  />
+    <span>{{ settings.height }}</span>
+  </div>
+</div>
